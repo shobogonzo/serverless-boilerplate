@@ -1,4 +1,4 @@
-name: Deploy to dev
+name: dev
 
 on:
   push:
@@ -18,9 +18,9 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-1
           role-to-assume: arn:aws:iam::275316640779:role/GitHubActionsRole
