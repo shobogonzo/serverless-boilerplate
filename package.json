@@ -1,0 +1,13 @@
+{
+  "name": "shobo-backend",
+  "version": "1.0.0",
+  "description": "Serverless backend boilerplate",
+  "author": "Patrick Palmer",
+  "license": "AGPL-3.0-only",
+  "scripts": {
+    "sls": "sls"
+  },
+  "dependencies": {
+    "serverless": "^3.38.0"
+  }
+}
