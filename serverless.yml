@@ -33,8 +33,6 @@ resources:
           - email
         AutoVerifiedAttributes:
           - email
-        UsernameAttributes:
-          - email
         Schema:
           - Name: email
             Required: true
