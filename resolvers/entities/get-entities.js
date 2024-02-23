@@ -1,5 +1,5 @@
 export function request(ctx) {
-  if (!ctx.args.limit <= 25) {
+  if (ctx.args.limit >= 25) {
     util.error('Max limit is 25');
   }
 

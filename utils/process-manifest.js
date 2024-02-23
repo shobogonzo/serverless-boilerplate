@@ -21,6 +21,8 @@ module.exports = async function processManifest(manifestData) {
   await updateDotEnv(dotEnvFile, {
     API_URL: getOutputValue('GraphQlApiUrl'),
     ENTITIES_TABLE: getOutputValue('EntitiesTable'),
+    USER_POOL_ID: getOutputValue('UserPoolId'),
+    USER_POOL_CLIENT_ID: getOutputValue('UserPoolClientId'),
   });
 };
 
