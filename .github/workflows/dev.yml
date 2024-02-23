@@ -29,11 +29,17 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Deploy to dev
+      - name: Deploy temp environment
         run: |
-          yarn sls deploy --stage dev
-          yarn sls export-env --stage dev
-          yarn sls manifest --stage dev
+          yarn sls deploy --stage dev-ci
+          yarn sls export-env --stage dev-ci
+          yarn sls manifest --stage dev-ci
 
-      - name: Seed entities
-        run: node ./utils/seed-entities.js
+      - name: Run integration tests
+        run: yarn jest ./tests/test_cases/integration --silent
+
+      - name: Destroy temp environment
+        run: yarn sls remove --stage dev-ci
+
+      - name: Deploy to dev
+        run: yarn sls deploy --stage dev
