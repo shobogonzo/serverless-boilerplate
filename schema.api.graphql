@@ -1,0 +1,23 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Query {
+  getEntities(nextToken: String): [Entity]!
+  getEntity(entityId: String): Entity
+}
+
+type Mutation {
+  createEntity(entity: EntityInput): Entity!
+}
+
+input EntityInput {
+  name: String!
+}
+
+type Entity {
+  id: ID!
+  name: String!
+  createdAt: AWSDateTime!
+}

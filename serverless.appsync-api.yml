@@ -1,0 +1,16 @@
+name: entity-api
+schema: schema.api.graphql
+authentication:
+  type: AMAZON_COGNITO_USER_POOLS
+  config:
+    awsRegion: us-east-1
+    defaultAction: ALLOW
+    userPoolId: !Ref UserPool
+
+dataSources:
+  entitiesTable:
+    type: AMAZON_DYNAMODB
+    description: 'Shobo entities table'
+    name: entitiesTable
+    config:
+      tableName: !Ref EntitiesTable

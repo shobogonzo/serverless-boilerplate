@@ -30,4 +30,10 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Deploy to dev
-        run: yarn sls deploy --stage dev
+        run: |
+          yarn sls deploy --stage dev
+          yarn sls export-env --stage dev
+          yarn sls manifest --stage dev
+
+      - name: Seed entities
+        run: node ./utils/seed-entities.js
