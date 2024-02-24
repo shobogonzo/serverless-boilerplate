@@ -10,21 +10,21 @@ authentication:
 resolvers:
   Query.getEntity:
     kind: UNIT
-    dataSource: entitiesTable
+    dataSource: shoboTable
     code: resolvers/entities/get-entity.js
   Query.getEntities:
     kind: UNIT
-    dataSource: entitiesTable
+    dataSource: shoboTable
     code: resolvers/entities/get-entities.js
   Mutation.createEntity:
     kind: UNIT
-    dataSource: entitiesTable
+    dataSource: shoboTable
     code: resolvers/entities/create-entity.js
 
 dataSources:
-  entitiesTable:
+  shoboTable:
     type: AMAZON_DYNAMODB
     description: 'Shobo entities table'
-    name: entitiesTable
+    name: shoboTable
     config:
-      tableName: !Ref EntitiesTable
+      tableName: !Ref ShoboTable
