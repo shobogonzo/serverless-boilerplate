@@ -24,9 +24,9 @@
 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { PutCommand, DynamoDBDocumentClient } = require('@aws-sdk/lib-dynamodb');
-const middy = require('@middy/core');
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
+const middy = require('@middy/core');
 const {
   Logger,
   injectLambdaContext,
@@ -42,11 +42,13 @@ const lambdaHandler = async (event) => {
 
   const firstName = event.request.userAttributes['given_name'];
   const lastName = event.request.userAttributes['family_name'];
+  const email = event.request.userAttributes.email;
 
   const user = {
     PK: `USER#${event.userName}`,
     firstName,
     lastName,
+    email,
     createdAt: new Date().toJSON(),
   };
   logger.info(user);

@@ -11,7 +11,8 @@ describe('When confirmUserSignup runs', () => {
       pool: 'abcdefghijklmnopqrstuvwxyz',
     });
 
-    const username = `${firstName.charAt(0)}${lastName}-${suffix}`.toLowerCase();
+    let username = `${firstName.charAt(0)}${lastName}-${suffix}`;
+    username = username.toLowerCase();
 
     await when.we_invoke_confirmUserSignup(
       username,
@@ -25,6 +26,7 @@ describe('When confirmUserSignup runs', () => {
       PK: `USER#${username}`,
       firstName,
       lastName,
+      email,
       createdAt: expect.stringMatching(
         /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d(?:\.\d+)?Z?/g
       ),
