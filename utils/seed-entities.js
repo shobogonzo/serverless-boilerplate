@@ -24,7 +24,7 @@ const putRequests = entities.map((entity) => ({
 
 const command = new BatchWriteCommand({
   RequestItems: {
-    [process.env.ENTITIES_TABLE]: putRequests,
+    [process.env.SHOBO_TABLE]: putRequests,
   },
 });
 

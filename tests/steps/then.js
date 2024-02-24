@@ -6,11 +6,11 @@ const user_exists_in_DynamoDB = async (username) => {
   const docClient = DynamoDBDocumentClient.from(ddbClient);
 
   console.log(
-    `looking for user [${username}] in table [${process.env.ENTITIES_TABLE}]`
+    `looking for user [${username}] in table [${process.env.SHOBO_TABLE}]`
   );
   const resp = await docClient.send(
     new GetCommand({
-      TableName: process.env.ENTITIES_TABLE,
+      TableName: process.env.SHOBO_TABLE,
       Key: { PK: `USER#${username}` },
     })
   );

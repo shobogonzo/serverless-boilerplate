@@ -6,7 +6,12 @@ const chance = require('chance').Chance();
 describe('When confirmUserSignup runs', () => {
   it("The user's profile should be saved in DynamoDB", async () => {
     const { firstName, lastName, email } = given.a_random_user();
-    const username = chance.guid();
+    const suffix = chance.string({
+      length: 6,
+      pool: 'abcdefghijklmnopqrstuvwxyz',
+    });
+
+    const username = `${firstName.charAt(0)}${lastName}-${suffix}`.toLowerCase();
 
     await when.we_invoke_confirmUserSignup(
       username,

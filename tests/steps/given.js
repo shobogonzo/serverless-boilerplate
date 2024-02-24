@@ -14,7 +14,7 @@ const a_random_user = () => {
     length: 4,
     pool: 'abcdefghijklmnopqrstuvwxyz',
   });
-  const password = chance.string({ length: 8 });
+  const password = chance.string({ length: 10 });
   const email = `${firstName}-${lastName}-${suffix}@test.com`;
 
   return {
@@ -26,22 +26,30 @@ const a_random_user = () => {
 };
 
 const an_authenticated_user = async () => {
-  const { email, password } = a_random_user();
+  const { email, firstName, lastName, password } = a_random_user();
 
   const cognitoClient = new CognitoIdentityProviderClient();
   const userPoolId = process.env.USER_POOL_ID;
   const clientId = process.env.USER_POOL_CLIENT_ID;
+  const suffix = chance.string({
+    length: 6,
+    pool: 'abcdefghijklmnopqrstuvwxyz',
+  });
+
+  const username = `${firstName.charAt(0)}${lastName}-${suffix}`.toLowerCase();
 
   const signUpResp = await cognitoClient.send(
     new SignUpCommand({
       ClientId: clientId,
-      Username: email,
+      Username: username,
       Password: password,
-      UserAttributes: [{ Name: 'email', Value: email }],
+      UserAttributes: [
+        { Name: 'email', Value: email },
+        { Name: 'given_name', Value: firstName },
+        { Name: 'family_name', Value: lastName },
+      ],
     })
   );
-
-  const username = signUpResp.UserSub;
   console.log(`[${email}] - user has signed up [${username}]`);
 
   await cognitoClient.send(
@@ -50,7 +58,6 @@ const an_authenticated_user = async () => {
       Username: username,
     })
   );
-
   console.log(`[${email}] - confirmed sign up`);
 
   const auth = await cognitoClient.send(
@@ -63,7 +70,6 @@ const an_authenticated_user = async () => {
       },
     })
   );
-
   console.log(`$[${email}] - signed in`);
 
   return {

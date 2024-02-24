@@ -7,7 +7,7 @@
       triggerSource: 'PostConfirmation_ConfirmSignUp',
       region: 'us-east-1',
       userPoolId: 'us-east-1_XgzZmqL3b',
-      userName: '3da239a6-1f47-53aa-8fb0-e1b70ec1d439',
+      userName: 'jboone-asdfas',
       request: {
         userAttributes: {
           sub: '3da239a6-1f47-53aa-8fb0-e1b70ec1d439',
@@ -24,28 +24,36 @@
 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { PutCommand, DynamoDBDocumentClient } = require('@aws-sdk/lib-dynamodb');
+const middy = require('@middy/core');
 const client = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(client);
+const {
+  Logger,
+  injectLambdaContext,
+} = require('@aws-lambda-powertools/logger');
 
-const { ENTITIES_TABLE } = process.env;
+const { SERVICE_NAME, SHOBO_TABLE } = process.env;
+const logger = new Logger({ serviceName: SERVICE_NAME });
 
-module.exports.handler = async (event) => {
+const lambdaHandler = async (event) => {
   if (event.triggerSource !== 'PostConfirmation_ConfirmSignUp') {
     return event;
   }
 
   const firstName = event.request.userAttributes['given_name'];
   const lastName = event.request.userAttributes['family_name'];
+
   const user = {
     PK: `USER#${event.userName}`,
     firstName,
     lastName,
     createdAt: new Date().toJSON(),
   };
+  logger.info(user);
 
   await docClient.send(
     new PutCommand({
-      TableName: ENTITIES_TABLE,
+      TableName: SHOBO_TABLE,
       Item: user,
       ConditionExpression: 'attribute_not_exists(PK)',
     })
@@ -53,3 +61,7 @@ module.exports.handler = async (event) => {
 
   return event;
 };
+
+module.exports.handler = middy()
+  .use(injectLambdaContext(logger))
+  .handler(lambdaHandler);

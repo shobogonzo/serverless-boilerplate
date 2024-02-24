@@ -5,6 +5,7 @@ plugins:
   - serverless-appsync-plugin
   - serverless-export-env
   - serverless-manifest-plugin
+  - serverless-iam-roles-per-function
 
 provider:
   name: aws
@@ -12,7 +13,8 @@ provider:
   stage: dev
   region: us-east-1
   environment:
-    STAGE: ${self:custom.stage}
+    SERVICE_NAME: ${self:service}
+    LOG_LEVEL: ${self:custom.logLevel.${sls:stage}, self:custom.logLevel.default}
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1'
 
 package:
@@ -29,8 +31,23 @@ custom:
     disablePostDeployGeneration: true
     disableOutput: true
     silent: true
+  logLevel:
+    prod: ERROR
+    default: INFO
+  serverless-iam-roles-per-function:
+    defaultInherit: true
 
 appSync: ${file(serverless.appsync-api.yml)}
+
+functions:
+  confirmUserSignup:
+    handler: functions/confirm-user-signup.handler
+    environment:
+      SHOBO_TABLE: !Ref ShoboTable
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:PutItem
+        Resource: !GetAtt ShoboTable.Arn
 
 resources:
   Resources:
@@ -52,6 +69,16 @@ resources:
         Schema:
           - Name: email
             Required: true
+        LambdaConfig:
+          PostConfirmation: !GetAtt ConfirmUserSignupLambdaFunction.Arn
+
+    UserPoolInvokeConfirmUserSignupLambdaPermission:
+      Type: AWS::Lambda::Permission
+      Properties:
+        Action: lambda:invokeFunction
+        FunctionName: !Ref ConfirmUserSignupLambdaFunction
+        Principal: cognito-idp.amazonaws.com
+        SourceArn: !GetAtt UserPool.Arn
 
     UserPoolClient:
       Type: AWS::Cognito::UserPoolClient
@@ -73,7 +100,7 @@ resources:
           - ClientId: !Ref UserPoolClient
             ProviderName: !GetAtt UserPool.ProviderName
 
-    EntitiesTable:
+    ShoboTable:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
@@ -91,7 +118,7 @@ resources:
       Value: !Ref UserPoolClient
     IdentityPoolId:
       Value: !Ref IdentityPool
-    EntitiesTable:
-      Value: !Ref EntitiesTable
+    ShoboTable:
+      Value: !Ref ShoboTable
     GraphQlApiUrl:
       Value: !GetAtt GraphQlApi.GraphQLUrl
