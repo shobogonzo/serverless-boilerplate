@@ -1,11 +1,23 @@
+require('dotenv').config();
 const {
   CognitoIdentityProviderClient,
   SignUpCommand,
   AdminConfirmSignUpCommand,
-  InitiateAuthCommand,
 } = require('@aws-sdk/client-cognito-identity-provider');
-require('dotenv').config();
 const chance = require('chance').Chance();
+const { GraphQL, registerFragment } = require('../lib/graphql');
+
+const myProfileFragment = `
+fragment myProfileFields on MyProfile {
+  id
+  firstName
+  lastName
+  email
+  createdAt
+}
+`;
+
+registerFragment('myProfileFields', myProfileFragment);
 
 const we_invoke_confirmUserSignup = async (
   username,
@@ -79,7 +91,27 @@ const a_user_signs_up = async (password, firstName, lastName, email) => {
   };
 };
 
+const a_user_calls_getMyProfile = async (user) => {
+  const getMyProfile = `query getMyProfile {
+    getMyProfile {
+      ... myProfileFields
+    }
+  }`;
+
+  const data = await GraphQL(
+    process.env.API_URL,
+    getMyProfile,
+    {},
+    user.accessToken
+  );
+
+  const profile = data.getMyProfile;
+  console.log(`[${user.username}] - fetched profile`);
+  return profile;
+};
+
 module.exports = {
   we_invoke_confirmUserSignup,
   a_user_signs_up,
+  a_user_calls_getMyProfile,
 };

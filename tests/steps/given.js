@@ -28,7 +28,7 @@ const a_random_user = () => {
 const an_authenticated_user = async () => {
   const { email, firstName, lastName, password } = a_random_user();
 
-  const cognitoClient = new CognitoIdentityProviderClient();
+  const cognito = new CognitoIdentityProviderClient();
   const userPoolId = process.env.USER_POOL_ID;
   const clientId = process.env.USER_POOL_CLIENT_ID;
   const suffix = chance.string({
@@ -38,7 +38,7 @@ const an_authenticated_user = async () => {
 
   const username = `${firstName.charAt(0)}${lastName}-${suffix}`.toLowerCase();
 
-  const signUpResp = await cognitoClient.send(
+  await cognito.send(
     new SignUpCommand({
       ClientId: clientId,
       Username: username,
@@ -52,7 +52,7 @@ const an_authenticated_user = async () => {
   );
   console.log(`[${email}] - user has signed up [${username}]`);
 
-  await cognitoClient.send(
+  await cognito.send(
     new AdminConfirmSignUpCommand({
       UserPoolId: userPoolId,
       Username: username,
@@ -60,7 +60,7 @@ const an_authenticated_user = async () => {
   );
   console.log(`[${email}] - confirmed sign up`);
 
-  const auth = await cognitoClient.send(
+  const auth = await cognito.send(
     new InitiateAuthCommand({
       AuthFlow: 'USER_PASSWORD_AUTH',
       ClientId: clientId,
@@ -74,6 +74,8 @@ const an_authenticated_user = async () => {
 
   return {
     username,
+    firstName,
+    lastName,
     email,
     idToken: auth.AuthenticationResult.IdToken,
     accessToken: auth.AuthenticationResult.AccessToken,

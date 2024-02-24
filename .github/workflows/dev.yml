@@ -23,7 +23,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-1
-          role-to-assume: arn:aws:iam::275316640779:role/GitHubActionsRole
+          role-to-assume: arn:aws:iam::637423321676:role/GitHubActionsRole
           role-session-name: GithubActionsSession
 
       - name: Install dependencies

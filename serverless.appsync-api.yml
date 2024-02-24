@@ -6,6 +6,9 @@ authentication:
     awsRegion: us-east-1
     defaultAction: ALLOW
     userPoolId: !Ref UserPool
+logging:
+  level: ERROR
+  retentionInDays: 14
 
 resolvers:
   Query.getEntity:
@@ -20,6 +23,10 @@ resolvers:
     kind: UNIT
     dataSource: shoboTable
     code: resolvers/entities/create-entity.js
+  Query.getMyProfile:
+    kind: UNIT
+    dataSource: shoboTable
+    code: resolvers/user-profiles/get-my-profile.js
 
 dataSources:
   shoboTable:

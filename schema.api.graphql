@@ -4,8 +4,9 @@ schema {
 }
 
 type Query {
+  getMyProfile: MyProfile!
   getEntities(nextToken: String): [Entity]!
-  getEntity(entityId: String): Entity
+  getEntity(id: String): Entity
 }
 
 type Mutation {
@@ -14,6 +15,14 @@ type Mutation {
 
 input EntityInput {
   name: String!
+}
+
+type MyProfile {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  email: AWSEmail!
+  createdAt: AWSDateTime!
 }
 
 type Entity {
